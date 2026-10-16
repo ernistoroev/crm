@@ -17,8 +17,8 @@
     <tr><th>Телефон</th><td>{{ student.phone|default:'—' }}</td></tr>
     <tr><th>Адрес</th><td>{{ student.address|default:'—'|linebreaksbr }}</td></tr>
     <tr><th>Номер студ. билета</th><td>{{ student.student_id }}</td></tr>
-    <tr><th>Группа</th><td>{{ student.group }}</td></tr>
-    <tr><th>Специальность</th><td>{{ student.specialty }}</td></tr>
+    <tr><th>Группа</th><td>{{ student.group|default:'—' }}</td></tr>
+    <tr><th>Направление</th><td>{{ student.group.direction|default:'—' }}</td></tr>
     <tr><th>Курс</th><td>{{ student.get_course_display }}</td></tr>
     <tr><th>Год поступления</th><td>{{ student.admission_year|default:'—' }}</td></tr>
     <tr><th>Форма обучения</th><td>{{ student.get_education_form_display }}</td></tr>

@@ -1,17 +1,30 @@
 from django.test import TestCase
 from django.urls import reverse
 
+from academics.models import Direction, Faculty, Group
+
 from .models import Student
+
+
+def get_group(name):
+    faculty, _ = Faculty.objects.get_or_create(name='Информационные технологии', short_name='ИТ')
+    direction, _ = Direction.objects.get_or_create(
+        code='09.02.07', defaults={'name': 'Информационные системы', 'faculty': faculty},
+    )
+    group, _ = Group.objects.get_or_create(
+        name=name, defaults={'direction': direction, 'admission_year': 2024},
+    )
+    return group
 
 
 def make_student(**kwargs):
     data = {
         'username': 'ivanov', 'last_name': 'Иванов', 'first_name': 'Иван',
         'middle_name': 'Петрович', 'gender': 'М', 'student_id': 'S-001',
-        'group': 'ИС-21', 'specialty': 'Информационные системы', 'course': 2,
-        'education_form': 'очная', 'funding': 'бюджет',
+        'course': 2, 'education_form': 'очная', 'funding': 'бюджет',
     }
     data.update(kwargs)
+    data['group'] = get_group(data.get('group', 'ИС-21'))
     return Student.objects.create_user(password='pass12345', **data)
 
 
@@ -54,7 +67,7 @@ class StudentCrudTests(TestCase):
         self.assertContains(response, 'Петрова')
         self.assertNotContains(response, 'Иванов Иван')
 
-        response = self.client.get(url, {'group': 'ИС-21'})
+        response = self.client.get(url, {'group': self.student.group_id})
         self.assertContains(response, 'Иванов Иван')
         self.assertNotContains(response, 'Петрова Анна')
 
@@ -70,8 +83,8 @@ class StudentCrudTests(TestCase):
         self.login()
         response = self.client.post(reverse('users:create'), {
             'username': 'sidorov', 'last_name': 'Сидоров', 'first_name': 'Олег',
-            'gender': 'М', 'student_id': 'S-003', 'group': 'ИС-23',
-            'specialty': 'Программирование', 'course': 1, 'education_form': 'заочная',
+            'gender': 'М', 'student_id': 'S-003', 'group': get_group('ИС-23').pk,
+            'course': 1, 'education_form': 'заочная',
             'funding': 'контракт', 'status': 'обучается',
             'password1': 'secret123', 'password2': 'secret123',
         })
@@ -90,16 +103,16 @@ class StudentCrudTests(TestCase):
     def test_update(self):
         self.login()
         url = reverse('users:update', args=[self.student.pk])
+        new_group = get_group('ИС-31')
         data = {
             'username': 'ivanov', 'last_name': 'Иванов', 'first_name': 'Иван',
-            'gender': 'М', 'student_id': 'S-001', 'group': 'ИС-31',
-            'specialty': 'Информационные системы', 'course': 3,
+            'gender': 'М', 'student_id': 'S-001', 'group': new_group.pk, 'course': 3,
             'education_form': 'очная', 'funding': 'бюджет', 'status': 'обучается',
         }
         response = self.client.post(url, data)
         self.assertRedirects(response, reverse('users:detail', args=[self.student.pk]))
         self.student.refresh_from_db()
-        self.assertEqual(self.student.group, 'ИС-31')
+        self.assertEqual(self.student.group, new_group)
         self.assertEqual(self.student.course, 3)
 
     def test_delete_with_confirmation(self):
