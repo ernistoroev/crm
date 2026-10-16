@@ -8,7 +8,7 @@ class Student(AbstractUser):
     COURSE_CHOICES = [(i, f'{i} курс') for i in range(1, 5)]
     EDUCATION_FORM_CHOICES = [
         ('очная', 'Очная'),
-        ('заочная', 'Эаочная'),
+        ('заочная', 'Заочная'),
         ('вечерняя', 'Вечерняя'),
     ]
     FUNDING_CHOICES = [('бюджет', 'Бюджет',), ('контракт', 'Контракт')]
@@ -37,8 +37,7 @@ class Student(AbstractUser):
     education_form = models.CharField('форма обучения', max_length=20, choices=EDUCATION_FORM_CHOICES)
     funding = models.CharField('основа обучения', max_length=20, choices=FUNDING_CHOICES)
     status = models.CharField('статус', max_length=20, choices=STATUS_CHOICES, default='обучается')
-
-     = models.DateTimeField( auto_now_add=True)
+    created_at = models.DateTimeField( auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
