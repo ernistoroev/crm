@@ -1,0 +1,14 @@
+{% extends 'users/base.html' %}
+
+{% block title %}{% if object %}Редактирование{% else %}Новый студент{% endif %}{% endblock %}
+
+{% block content %}
+<h1>{% if object %}Редактирование: {{ object.full_name }}{% else %}Новый студент{% endif %}</h1>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn">Сохранить</button>
+    <a href="{% if object %}{% url 'users:detail' object.pk %}{% else %}{% url 'users:list' %}{% endif %}">Отмена</a>
+</form>
+{% endblock %}

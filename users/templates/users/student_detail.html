@@ -1,0 +1,36 @@
+{% extends 'users/base.html' %}
+
+{% block title %}{{ student.full_name }}{% endblock %}
+
+{% block content %}
+<h1>{{ student.full_name|default:student.username }}</h1>
+
+{% if student.photo %}
+    <p><img class="photo" src="{{ student.photo.url }}" alt="Фото"></p>
+{% endif %}
+
+<table>
+    <tr><th>Логин</th><td>{{ student.username }}</td></tr>
+    <tr><th>Email</th><td>{{ student.email|default:'—' }}</td></tr>
+    <tr><th>Дата рождения</th><td>{{ student.birth_date|date:'d.m.Y'|default:'—' }}</td></tr>
+    <tr><th>Пол</th><td>{{ student.get_gender_display|default:'—' }}</td></tr>
+    <tr><th>Телефон</th><td>{{ student.phone|default:'—' }}</td></tr>
+    <tr><th>Адрес</th><td>{{ student.address|default:'—'|linebreaksbr }}</td></tr>
+    <tr><th>Номер студ. билета</th><td>{{ student.student_id }}</td></tr>
+    <tr><th>Группа</th><td>{{ student.group }}</td></tr>
+    <tr><th>Специальность</th><td>{{ student.specialty }}</td></tr>
+    <tr><th>Курс</th><td>{{ student.get_course_display }}</td></tr>
+    <tr><th>Год поступления</th><td>{{ student.admission_year|default:'—' }}</td></tr>
+    <tr><th>Форма обучения</th><td>{{ student.get_education_form_display }}</td></tr>
+    <tr><th>Основа обучения</th><td>{{ student.get_funding_display }}</td></tr>
+    <tr><th>Статус</th><td>{{ student.get_status_display }}</td></tr>
+</table>
+
+<p>
+    <a class="btn btn-light" href="{% url 'users:list' %}">&larr; К списку</a>
+    {% if user.is_authenticated %}
+        <a class="btn" href="{% url 'users:update' student.pk %}">Редактировать</a>
+        <a class="btn btn-danger" href="{% url 'users:delete' student.pk %}">Удалить</a>
+    {% endif %}
+</p>
+{% endblock %}

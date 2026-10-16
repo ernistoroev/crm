@@ -1,0 +1,54 @@
+{% extends 'users/base.html' %}
+
+{% block title %}Студенты{% endblock %}
+
+{% block content %}
+<h1>Студенты</h1>
+
+<form method="get">
+    <input type="search" name="q" value="{{ q }}" placeholder="Поиск по ФИО">
+    <select name="group">
+        <option value="">Все группы</option>
+        {% for g in groups %}
+            <option value="{{ g }}" {% if g == current_group %}selected{% endif %}>{{ g }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit" class="btn">Найти</button>
+    {% if q or current_group %}<a href="{% url 'users:list' %}">Сбросить</a>{% endif %}
+</form>
+
+{% if user.is_authenticated %}
+    <p><a class="btn" href="{% url 'users:create' %}">+ Добавить студента</a></p>
+{% endif %}
+
+<table>
+    <thead>
+    <tr><th>ФИО</th><th>Группа</th><th>Курс</th><th>Студ. билет</th><th>Статус</th></tr>
+    </thead>
+    <tbody>
+    {% for student in students %}
+        <tr>
+            <td><a href="{% url 'users:detail' student.pk %}">{{ student.full_name|default:student.username }}</a></td>
+            <td>{{ student.group }}</td>
+            <td>{{ student.get_course_display }}</td>
+            <td>{{ student.student_id }}</td>
+            <td>{{ student.get_status_display }}</td>
+        </tr>
+    {% empty %}
+        <tr><td colspan="5">Студенты не найдены.</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% if is_paginated %}
+    <p>
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}&q={{ q|urlencode }}&group={{ current_group|urlencode }}">&larr; Назад</a>
+        {% endif %}
+        Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}&q={{ q|urlencode }}&group={{ current_group|urlencode }}">Вперёд &rarr;</a>
+        {% endif %}
+    </p>
+{% endif %}
+{% endblock %}
