@@ -10,7 +10,7 @@
     <select name="group">
         <option value="">Все группы</option>
         {% for g in groups %}
-            <option value="{{ g }}" {% if g == current_group %}selected{% endif %}>{{ g }}</option>
+            <option value="{{ g.pk }}" {% if g.pk|stringformat:'s' == current_group %}selected{% endif %}>{{ g.name }}</option>
         {% endfor %}
     </select>
     <button type="submit" class="btn">Найти</button>
@@ -29,7 +29,7 @@
     {% for student in students %}
         <tr>
             <td><a href="{% url 'users:detail' student.pk %}">{{ student.full_name|default:student.username }}</a></td>
-            <td>{{ student.group }}</td>
+            <td>{{ student.group|default:'—' }}</td>
             <td>{{ student.get_course_display }}</td>
             <td>{{ student.student_id }}</td>
             <td>{{ student.get_status_display }}</td>

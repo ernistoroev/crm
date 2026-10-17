@@ -5,7 +5,7 @@ from .models import Student
 
 PERSONAL_FIELDS = ('middle_name', 'birth_date', 'gender', 'phone', 'address', 'photo')
 STUDY_FIELDS = (
-    'student_id', 'group', 'specialty', 'course', 'admission_year',
+    'student_id', 'group', 'course', 'admission_year',
     'education_form', 'funding', 'status',
 )
 

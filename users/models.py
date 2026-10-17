@@ -27,8 +27,14 @@ class Student(AbstractUser):
     address = models.TextField('адрес', blank=True)
     photo = models.ImageField('фото', upload_to='students/', blank=True, null=True)
     student_id = models.CharField('номер студенческого билета', max_length=20, unique=True)
-    group = models.CharField('учебная группа', max_length=20)
-    specialty = models.CharField('специальность', max_length=150)
+    group = models.ForeignKey(
+        'academics.Group',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='students',
+        verbose_name='учебная группа',
+    )
     course = models.PositiveSmallIntegerField('курс', choices=COURSE_CHOICES)
     admission_year = models.PositiveSmallIntegerField('год поступления', blank=True, null=True)
     education_form = models.CharField('форма обучения', max_length=20, choices=EDUCATION_FORM_CHOICES)
@@ -47,4 +53,6 @@ class Student(AbstractUser):
         return f'{self.last_name} {self.first_name} {self.middle_name}'.strip()
 
     def __str__(self):
-        return f'{self.full_name} ({self.group})'
+        if self.group:
+            return f'{self.full_name} ({self.group})'
+        return self.full_name or self.username

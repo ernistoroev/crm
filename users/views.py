@@ -3,6 +3,8 @@ from django.db.models import Q
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
 
+from academics.models import Group
+
 from .forms import StudentCreateForm, StudentForm
 from .models import Student
 
@@ -13,7 +15,7 @@ class StudentListView(ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = super().get_queryset().select_related('group')
         q = self.request.GET.get('q', '').strip()
         group = self.request.GET.get('group', '')
         if q:
@@ -27,18 +29,13 @@ class StudentListView(ListView):
                     | Q(middle_name__icontains=word)
                 )
             queryset = queryset.filter(condition)
-        if group:
-            queryset = queryset.filter(group=group)
+        if group.isdigit():
+            queryset = queryset.filter(group_id=group)
         return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['groups'] = (
-            Student.objects.exclude(group='')
-            .order_by('group')
-            .values_list('group', flat=True)
-            .distinct()
-        )
+        context['groups'] = Group.objects.all()
         context['q'] = self.request.GET.get('q', '')
         context['current_group'] = self.request.GET.get('group', '')
         return context

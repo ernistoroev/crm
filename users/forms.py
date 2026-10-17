@@ -9,7 +9,7 @@ class StudentForm(forms.ModelForm):
         fields = [
             'username', 'last_name', 'first_name', 'middle_name', 'email',
             'birth_date', 'gender', 'phone', 'address', 'photo',
-            'student_id', 'group', 'specialty', 'course', 'admission_year',
+            'student_id', 'group', 'course', 'admission_year',
             'education_form', 'funding', 'status',
         ]
         widgets = {
