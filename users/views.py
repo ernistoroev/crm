@@ -2,9 +2,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
-
+from rest_framework import mixins, viewsets
 from academics.models import Group
-
+from .serializers import StudentSerializer
 from .forms import StudentCreateForm, StudentForm
 from .models import Student
 
@@ -67,3 +67,10 @@ class StudentDeleteView(LoginRequiredMixin, DeleteView):
     model = Student
     context_object_name = 'student'
     success_url = reverse_lazy('users:list')
+
+class StudentViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
+    queryset = Student.objects.select_related('group')
+    serializer_class = StudentSerializer
+
+
+
